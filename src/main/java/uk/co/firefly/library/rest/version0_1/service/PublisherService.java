@@ -1,11 +1,17 @@
 package uk.co.firefly.library.rest.version0_1.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import uk.co.firefly.library.rest.version0_1.exception.BadRequestException;
 import uk.co.firefly.library.rest.version0_1.exception.ResourceNotFoundException;
+import uk.co.firefly.library.rest.version0_1.model.Picture;
 import uk.co.firefly.library.rest.version0_1.model.Publisher;
 import uk.co.firefly.library.rest.version0_1.repository.PublisherRepository;
 
@@ -19,6 +25,26 @@ public class PublisherService {
 		return repository.findAll();
 	}
 
+	public List<Publisher> getAll(Integer page, Integer perPage, String sortDirection, String sortField) {
+		if (page != null && perPage != null && sortDirection != null && sortField != null) {
+			Direction direction = Direction.ASC;
+			try {
+				direction = Direction.fromString(sortDirection);
+			} catch (IllegalArgumentException e) {
+				throw new BadRequestException("Bad request." + e.getLocalizedMessage());
+			}
+			return (List<Publisher>) repository.findAll(
+					PageRequest.of(page, perPage, Sort.by(direction, sortField)))
+					.stream().collect(Collectors.toList());
+		} else {
+			return getAll();	
+		}
+	}
+	
+	public Long getCount() {
+		return repository.count();
+	}
+	
 	public Publisher get(Long publisherId) {
 		return repository.findById(publisherId)
 				.orElseThrow(() -> new ResourceNotFoundException("Resource " + publisherId + " not found."));

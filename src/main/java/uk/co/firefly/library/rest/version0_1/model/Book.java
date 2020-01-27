@@ -51,7 +51,7 @@ public class Book {
 
 	@ApiModelProperty(hidden = true)
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
+	@OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
 	private Set<Picture> pictures;
 
 	@JsonView(PictureView.FileInfo.class)

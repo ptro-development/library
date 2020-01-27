@@ -1,12 +1,17 @@
 package uk.co.firefly.library.rest.version0_1.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import uk.co.firefly.library.rest.version0_1.exception.BadRequestException;
 import uk.co.firefly.library.rest.version0_1.exception.ResourceNotFoundException;
 import uk.co.firefly.library.rest.version0_1.model.Author;
 import uk.co.firefly.library.rest.version0_1.model.Book;
@@ -30,9 +35,30 @@ public class BookService {
 	
 	BookService(){}
 	
-	public Set<Book> getAll(){
+	public List<Book> getAll(){
 		return bookRepository.findAll().stream().
-		map(book -> book.updateTransitiveAttributes()).collect(Collectors.toSet());
+		map(book -> book.updateTransitiveAttributes()).collect(Collectors.toList());
+	}
+	
+	public List<Book> getAll(Integer page, Integer perPage, String sortDirection, String sortField) {
+		if (page != null && perPage != null && sortDirection != null && sortField != null) {
+			Direction direction = Direction.ASC;
+			try {
+				direction = Direction.fromString(sortDirection);
+			} catch (IllegalArgumentException e) {
+				throw new BadRequestException("Bad request." + e.getLocalizedMessage());
+			}	
+			return (List<Book>) bookRepository.findAll(
+					PageRequest.of(page, perPage, Sort.by(direction, sortField)))
+					.stream().map(book -> book.updateTransitiveAttributes())
+					.collect(Collectors.toList());
+		} else {
+			return getAll();	
+		}
+	}
+	
+	public Long getCount() {
+		return bookRepository.count();
 	}
 	
 	public Book get(Long bookId) {
@@ -113,4 +139,9 @@ public class BookService {
 							"Book publisher resource " + publisherId.get() + " not found.")));
 		}
 	}
+	
+	public void removePicture(Picture picture) {
+		
+	}
+	
 }

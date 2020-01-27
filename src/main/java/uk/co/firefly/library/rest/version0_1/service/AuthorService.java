@@ -1,12 +1,18 @@
 package uk.co.firefly.library.rest.version0_1.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import uk.co.firefly.library.rest.version0_1.exception.BadRequestException;
 import uk.co.firefly.library.rest.version0_1.exception.ResourceNotFoundException;
 import uk.co.firefly.library.rest.version0_1.model.Author;
+import uk.co.firefly.library.rest.version0_1.model.Picture;
 import uk.co.firefly.library.rest.version0_1.repository.AuthorRepository;
 
 @Service
@@ -22,6 +28,25 @@ public class AuthorService {
 	
 	public List<Author> getAll() {
 		return repository.findAll();
+	}
+	
+	public List<Author> getAll(Integer page, Integer perPage, String sortDirection, String sortField) {
+		if (page != null && perPage != null && sortDirection != null && sortField != null) {
+			Direction direction = Direction.ASC;
+			try {
+				direction = Direction.fromString(sortDirection);
+			} catch (IllegalArgumentException e) {
+				throw new BadRequestException("Bad request." + e.getLocalizedMessage());
+			}
+			return (List<Author>) repository.findAll(
+					PageRequest.of(page, perPage, Sort.by(direction, sortField))).stream().collect(Collectors.toList());
+		} else {
+			return getAll();	
+		}
+	}
+	
+	public Long getCount() {
+		return repository.count();
 	}
 
 	public Author save(Author newAuthor) {

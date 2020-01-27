@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import uk.co.firefly.library.rest.version0_1.model.Publisher;
 import uk.co.firefly.library.rest.version0_1.service.PublisherService;
 
@@ -31,8 +34,20 @@ public class PublisherController {
 
 	@ApiOperation(value = "View a list of available publishers")
 	@GetMapping(value = "/publishers", produces = "application/json")
-	ResponseEntity<List<Publisher>> all() {
-		return new ResponseEntity(service.getAll(), HttpStatus.OK);
+	ResponseEntity<List<Publisher>> all(
+		@ApiParam(required = false)
+		@RequestParam(name = "_page", required = false) Integer _page,
+		@ApiParam(required = false)
+		@RequestParam(name = "_perPage", required = false) Integer _perPage,
+		@ApiParam(required = false, allowableValues = "ASC, DESC")
+		@RequestParam(name = "_sortDir", required = false) String _sortDir,
+		@ApiParam(required = false)
+		@RequestParam(name="_sortField", required = false) String _sortField) {
+		List list = service.getAll(_page, _perPage, _sortDir, _sortField);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("access-control-expose-headers", "X-Total-Count");
+		headers.add("x-total-count", service.getCount().toString());	
+		return new ResponseEntity(list, headers, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "View an publisher with an ID")

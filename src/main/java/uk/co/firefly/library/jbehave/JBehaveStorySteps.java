@@ -95,7 +95,7 @@ public class JBehaveStorySteps {
 		URI uri = new URIBuilder().setScheme("http").setHost(HOST).setPort(PORT).setPath(urlEndpoints.get(url))
 				.setParameter("type", type).setParameter("bookId", id).build();
 		HttpEntity httpEntity = MultipartEntityBuilder.create()
-				.addBinaryBody("uploadfile", "picture body".getBytes(), ContentType.create("image/jpeg"), "test.jpg")
+				.addBinaryBody("file", "picture body".getBytes(), ContentType.create("image/jpeg"), "test.jpg")
 				.build();
 		postRequest = new HttpPost(uri);
 		postRequest.setEntity(httpEntity);
