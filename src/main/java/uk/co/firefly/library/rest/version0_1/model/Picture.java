@@ -34,8 +34,12 @@ public class Picture {
 	@NotBlank
 	@NotNull
 	private String name;
+	
+	@Column(name = "pageNumber")
+	@JsonView(PictureView.FileInfo.class)
+	private Long pageNumber;
 
-	@ApiModelProperty(dataType = "string", allowableValues = "FRONT_COVER, BACK_COVER")
+	@ApiModelProperty(dataType = "string", allowableValues = "FRONT_COVER, BACK_COVER, PAGE")
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "picture_type", columnDefinition = "smallint")
 	@JsonView(PictureView.FileInfo.class)
@@ -89,6 +93,14 @@ public class Picture {
 		this.pictureType = pictureType;
 	}
 
+	public void setPageNumber(Long pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	
+	public Long getPageNumber() {
+		return pageNumber;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -124,12 +136,13 @@ public class Picture {
 	public Picture() {
 	}
 
-	public Picture(String name, String mimetype, byte[] picture, Book book, PictureType pictureType) {
+	public Picture(String name, String mimetype, byte[] picture, Book book, PictureType pictureType, Long pageNumber) {
 		this.name = name;
 		this.mimetype = mimetype;
 		this.picture = picture;
 		this.book = book;
 		this.pictureType = pictureType;
+		this.pageNumber = pageNumber;
 	}
 	
 	public Picture updateTransitiveAttributes() {

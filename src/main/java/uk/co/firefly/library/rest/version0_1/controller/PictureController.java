@@ -57,10 +57,11 @@ public class PictureController {
 	@PostMapping(value = "/pictures", produces = "application/json")
 	ResponseEntity<Picture> add(
 			@RequestParam("file") MultipartFile file,
-			@ApiParam(allowableValues = "FRONT_COVER, BACK_COVER", required = true)
+			@ApiParam(allowableValues = "FRONT_COVER, BACK_COVER, PAGE", required = true)
 			@RequestParam("type") PictureType type,
+			@RequestParam(name = "pageNumber", required = false) Long pageNumber,
 			@RequestParam("bookId") Long bookId) {
-		return new ResponseEntity(service.add(file, type, bookId), HttpStatus.CREATED);
+		return new ResponseEntity(service.add(file, type, bookId, pageNumber), HttpStatus.CREATED);
 	}
 
 	@ApiOperation(value = "Get an existing picture with an ID (metadata)")

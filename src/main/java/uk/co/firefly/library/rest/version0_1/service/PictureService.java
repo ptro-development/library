@@ -30,12 +30,15 @@ public class PictureService {
 	@Autowired
 	private BookRepository bookRepository;
 
-	public Picture add(MultipartFile file, PictureType type, Long bookId) {
+	public Picture add(MultipartFile file, PictureType type, Long bookId, Long pageNumber) {
 		Book book = bookRepository.findById(bookId)
 				.orElseThrow(() -> new ResourceNotFoundException("Book resource " + bookId + " not found."));
+		if (type.equals(type.PAGE) && pageNumber == null) {
+			throw new BadRequestException("For a PAGE type picture you need to provide a positive integer page number.");
+		}
 		try {
 			Picture picture = new Picture(file.getOriginalFilename(), file.getContentType(), file.getBytes(), book,
-					type);
+					type, pageNumber);
 			pictureRepository.save(picture);
 			book.add(picture);
 			bookRepository.save(book);
