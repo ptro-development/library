@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.co.firefly.library.rest.version0_1.exception.BadRequestException;
 import uk.co.firefly.library.rest.version0_1.exception.ResourceNotFoundException;
 import uk.co.firefly.library.rest.version0_1.model.Author;
-import uk.co.firefly.library.rest.version0_1.model.Picture;
+import uk.co.firefly.library.rest.version0_1.model.PictureSummary;
 import uk.co.firefly.library.rest.version0_1.repository.AuthorRepository;
 
 @Service

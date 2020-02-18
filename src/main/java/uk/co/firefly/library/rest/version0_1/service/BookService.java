@@ -10,12 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import uk.co.firefly.library.rest.version0_1.exception.BadRequestException;
 import uk.co.firefly.library.rest.version0_1.exception.ResourceNotFoundException;
 import uk.co.firefly.library.rest.version0_1.model.Author;
 import uk.co.firefly.library.rest.version0_1.model.Book;
-import uk.co.firefly.library.rest.version0_1.model.Picture;
+import uk.co.firefly.library.rest.version0_1.model.PictureSummary;
 import uk.co.firefly.library.rest.version0_1.model.Publisher;
 import uk.co.firefly.library.rest.version0_1.repository.AuthorRepository;
 import uk.co.firefly.library.rest.version0_1.repository.BookRepository;
@@ -80,12 +81,12 @@ public class BookService {
 		return publisher.orElseThrow(() -> new ResourceNotFoundException("Publisher resource not found."));
 	}
 	
-	public Set<Picture> getPictures(Long bookId) {
+	public Set<PictureSummary> getPictures(Long bookId) {
 		Book book = bookRepository.findById(bookId)
 				.orElseThrow(() -> new ResourceNotFoundException("Book resource " + bookId + " not found."));
-		Optional<Set<Picture>> pictures = Optional.ofNullable(
-				book.getPictures().stream().map(Picture::updateTransitiveAttributes).collect(Collectors.toSet()));
-		return pictures.orElseThrow(
+		Optional<Set<PictureSummary>> pictureSummaries = Optional.ofNullable(
+				book.getPicturesSummaries().stream().map(PictureSummary::updateTransitiveAttributes).collect(Collectors.toSet()));
+		return pictureSummaries.orElseThrow(
 						() -> new ResourceNotFoundException("Pictures resources not found."));
 	}
 	
@@ -139,9 +140,14 @@ public class BookService {
 							"Book publisher resource " + publisherId.get() + " not found.")));
 		}
 	}
-	
-	public void removePicture(Picture picture) {
-		
+
+	public Set<PictureSummary> getPicturesSummaries(Long bookId) {
+		Book book = bookRepository.findById(bookId)
+		.orElseThrow(() -> new ResourceNotFoundException("Resource " + bookId + " not found."));
+		Optional<Set<PictureSummary>> summaries = Optional.ofNullable(
+				book.getPicturesSummaries().stream()
+				.map(summary -> summary.updateTransitiveAttributes()).collect(Collectors.toSet()));
+		return summaries.orElseThrow(() -> new ResourceNotFoundException("Picture summaries were not found."));		
 	}
 	
 }

@@ -52,21 +52,21 @@ public class Book {
 	@ApiModelProperty(hidden = true)
 	@JsonIgnore
 	@OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
-	private Set<Picture> pictures;
+	private Set<PictureSummary> picturesSummaries;
 
-	@JsonView(PictureView.FileInfo.class)
+	@JsonView(PictureSummaryView.FileInfo.class)
 	@Size(min = 1, max = 255)
 	@Column(length = 255)
 	@NotBlank
 	@NotNull
 	private String title;
 
-	@JsonView(PictureView.FileInfo.class)
+	@JsonView(PictureSummaryView.FileInfo.class)
 	@Size(max = 10)
 	@Column(length = 10)
 	private String isbn10;
 
-	@JsonView(PictureView.FileInfo.class)
+	@JsonView(PictureSummaryView.FileInfo.class)
 	@Size(max = 14)
 	@Column(length = 14)
 	private String isbn13;
@@ -79,12 +79,12 @@ public class Book {
 		this.publisher = publisher;
 	}
 
-	public Set<Picture> getPictures() {
-		return pictures;
+	public Set<PictureSummary> getPicturesSummaries() {
+		return picturesSummaries;
 	}
 
-	public void setPictures(Set<Picture> pictures) {
-		this.pictures = pictures;
+	public void setPicturesSummaries(Set<PictureSummary> picturesSummaries) {
+		this.picturesSummaries = picturesSummaries;
 	}
 
 	public Long getId() {
@@ -130,21 +130,21 @@ public class Book {
 	public Book() {
 	}
 
-	public Book(String title, Author author, Publisher publisher, Set<Picture> pictures) {
+	public Book(String title, Author author, Publisher publisher, Set<PictureSummary> picturesSummaries) {
 		this.title = title;
 		this.author = author;
 		this.publisher = publisher;
-		this.pictures = pictures;
+		this.picturesSummaries = picturesSummaries;
 	}
 
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", author=" + author + ", publisher=" + publisher + ", pictures=" + pictures
+		return "Book [id=" + id + ", author=" + author + ", publisher=" + publisher + ", picturesSummaries=" + picturesSummaries
 				+ ", title=" + title + "]";
 	}
 
-	public void add(Picture picture) {
-		pictures.add(picture);
+	public void add(PictureSummary pictureSummary) {
+		picturesSummaries.add(pictureSummary);
 
 	}
 
